@@ -22,4 +22,13 @@ const addGame = async (req, res) => {
   }
 };
 
-module.exports = { addGame };
+const getAllGames = async (req, res) => {
+  try {
+    const games = await Game.find().sort({ createdAt: -1 });
+    res.json(games);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { addGame, getAllGames };
