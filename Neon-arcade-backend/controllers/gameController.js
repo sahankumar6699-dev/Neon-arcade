@@ -1,34 +1,48 @@
 const Game = require('../models/Game');
 
+// @desc    Add a new game
+// @route   POST /api/games/add
+// @access  Private (requires login)
 const addGame = async (req, res) => {
   try {
-    const { title, gameUrl, thumbnail, uploadedBy } = req.body;
+    const { title, gameUrl, thumbnail } = req.body;
 
-    const game = new Game({
+    // Basic validation
+    if (!title) {
+      return res.status(400).json({
+        success: false,
+        message: 'Title is required'
+      });
+    }
+
+    if (!gameUrl) {
+      return res.status(400).json({
+        success: false,
+        message: 'gameUrl is required'
+      });
+    }
+
+    const newGame = new Game({
       title,
       gameUrl,
       thumbnail,
-      uploadedBy
+      uploadedBy: req.user.id
     });
 
-    await game.save();
+    const savedGame = await newGame.save();
 
     res.status(201).json({
-      message: 'Game added successfully',
-      game
+      success: true,
+      message: 'Game uploaded successfully',
+      game: savedGame
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: 'Error uploading game',
+      error: error.message
+    });
   }
 };
 
-const getAllGames = async (req, res) => {
-  try {
-    const games = await Game.find().sort({ createdAt: -1 });
-    res.json(games);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-module.exports = { addGame, getAllGames };
+module.exports = { addGame };
