@@ -26,7 +26,7 @@ const addGame = async (req, res) => {
       title,
       gameUrl,
       thumbnail,
-      uploadedBy: req.user.id
+      uploadedBy: req.user.userid
     });
 
     const savedGame = await newGame.save();
